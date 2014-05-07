@@ -155,34 +155,36 @@
 		notify($deo['id'], "Validation Request Rejected", "Validation request for employee ".$_SESSION['EMP_VALIDATE']." last 5 year details have been rejected.", "validate.php","error");
 	}
 	
-	//for new user
-//	$newuser_query=$mysqli->query("select * from users where id='".$_SESSION['EMP_VALIDATE']."' and password='' and auth_id='emp'");
-	if($newuser_query->num_rows!=0)
-	{
-		$pass="p";
-		$updating_users=$mysqli->query("UPDATE users
-						SET password='".encode_password($pass, $date)."', created_date='$date'
-						WHERE id='".$_SESSION['EMP_VALIDATE']."'");
-		
-		#email the user and pass
-		/*
-		$email_query=mysql_query("SELECT email FROM user_details WHERE id='".$emp_id."'");
-		$row=mysql_fetch_row($email_query);
-		$to = $row[0];
-		$subject = "Registration on Online ISM MIS Portal";
-		$message = "You are registered on the Online ISM MIS Portal. Your Username and password are \n Username:".$emp_id ."\n Password:".$pass;
-		$from = "xyz@example.com";
-		$headers = "From:" . $from;
-//		mail($to,$subject,$message,$headers);
-		echo "Mail Sent";
-		*/
-	}
+	
 	//If all approved
 	$all_approved_query=$mysqli->query("delete from emp_validation_details where profile_pic_status='approved' and basic_details_status='approved' and prev_exp_status='approved' and family_details_status='approved' and educational_status='approved' and stay_status='approved'");
 	$find_entry=$mysqli->query("select * from emp_validation_details where id='".$_SESSION['EMP_VALIDATE']."'");
 	if($find_entry->num_rows!=0)
 		header('Location: validate_step.php?emp='.$_SESSION['EMP_VALIDATE']);
 	else
+	{
+		//for new user
+		if($newuser_query->num_rows!=0)
+		{
+			$pass="p";
+			$updating_users=$mysqli->query("UPDATE users
+							SET password='".encode_password($pass, $date)."', created_date='$date'
+							WHERE id='".$_SESSION['EMP_VALIDATE']."'");
+		
+			#email the user and pass
+			/*
+			$email_query=mysql_query("SELECT email FROM user_details WHERE id='".$emp_id."'");
+			$row=mysql_fetch_row($email_query);
+			$to = $row[0];
+			$subject = "Registration on Online ISM MIS Portal";
+			$message = "You are registered on the Online ISM MIS Portal. Your Username and password are \n Username:".$emp_id ."\n Password:".$pass;
+			$from = "xyz@example.com";
+			$headers = "From:" . $from;
+	//		mail($to,$subject,$message,$headers);
+			echo "Mail Sent";
+			*/
+		}
 		header('Location: validate.php');
+	}
 	mysql_close();
 ?>
